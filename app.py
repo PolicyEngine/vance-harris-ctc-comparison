@@ -60,7 +60,18 @@ def create_situation(filing_status, child_ages, earnings):
         },
         "families": {"family": {"members": ["adult"]}},
         "marital_units": {"marital_unit": {"members": ["adult"]}},
-        "tax_units": {"tax_unit": {"members": ["adult"]}},
+        "tax_units": {
+            "tax_unit": {
+                "members": ["adult"],
+                # Performance improvement settings
+                "premium_tax_credit": {YEAR: 0},
+                "tax_unit_itemizes": {YEAR: False},
+                "taxable_income_deductions_if_itemizing": {YEAR: 0},
+                "alternative_minimum_tax": {YEAR: 0},
+                "net_investment_income_tax": {YEAR: 0},
+                "eitc": {YEAR: 0},
+            }
+        },
         "households": {
             "household": {"members": ["adult"], "state_name": {YEAR: "TX"}}
         },
@@ -206,4 +217,5 @@ st.write("""
 - A positive value indicates an increase in the CTC under the reform, while a negative value indicates a decrease.
 - The simulation is for the tax year 2025.
 - Children must be under 17 years old to be eligible for the Child Tax Credit.
+- This simulation assumes no premium tax credit, no itemized deductions, no alternative minimum tax, no net investment income tax, and no earned income tax credit to improve performance.
 """)
