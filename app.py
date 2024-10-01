@@ -142,7 +142,7 @@ def create_reform_comparison_graph(filing_status, child_ages, earnings):
         ))
     
     fig.update_layout(
-        title=f'CTC Comparison for {"Married" if filing_status == "married" else "Single"} Household (Earnings: ${earnings:,})',
+        title=f'CTC value Comparison',
         xaxis_title="Reform",
         yaxis_title="CTC Value / Impact",
         yaxis=dict(tickformat='$,.0f'),
@@ -236,7 +236,7 @@ def create_reform_comparison_line_graph(filing_status, child_ages):
         name = reform_name.replace("_", " ").title()
         fig.add_trace(go.Scatter(x=x, y=net_income_impact, mode='lines', line=dict(color=colors[reform_name]), name=name))
 
-    title = f'Household Net Income Impact for {"Married" if filing_status == "married" else "Single"} Household'
+    title = f'CTC Reform total net income Impact'
     fig.update_layout(
         title=title,
         xaxis_title="Earnings",
@@ -255,11 +255,7 @@ def create_reform_comparison_line_graph(filing_status, child_ages):
     return fig
 
 # Streamlit app
-st.title("Child Tax Credit (CTC) Reform Comparison")
-
-st.write("""
-This app compares the impact of different Child Tax Credit (CTC) reform proposals.
-""")
+st.title("Harris vs Vance Child Tax Credit (CTC) Reform Comparison")
 
 # User inputs
 filing_status = "married" if st.checkbox("Married household") else "single"
@@ -271,9 +267,9 @@ for i in range(num_children):
     age = st.number_input(f"Age of child {i+1}", min_value=0, max_value=16, value=5)
     child_ages.append(age)
 
-earnings = st.number_input("Household earnings for 2025", min_value=0, max_value=1000000, value=50000, step=1000)
+earnings = st.number_input("Household wages and salaries in 2025", min_value=0, max_value=1000000, value=50000, step=1000)
 
-if st.button("Generate Graphs"):
+if st.button("Generate Comparison"):
     # Bar chart for specific earnings
     fig_bar = create_reform_comparison_graph(filing_status, child_ages, earnings)
     fig_bar = format_fig(fig_bar)
