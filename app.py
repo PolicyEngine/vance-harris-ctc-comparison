@@ -92,7 +92,7 @@ def create_situation(filing_status, child_ages, earnings):
 
 def calculate_ctc(situation, reform=None):
     simulation = Simulation(situation=situation, reform=reform)
-    if reform is vance_ref:
+    if reform is vance_ref or reform_harris:
         return simulation.calculate("refundable_ctc", YEAR)[0]
     else:
         return simulation.calculate("ctc_value", YEAR)[0]
