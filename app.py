@@ -258,7 +258,7 @@ def create_reform_comparison_line_graph(filing_status, child_ages):
 st.title("Harris vs Vance Child Tax Credit (CTC) Reform Comparison")
 
 # User inputs
-filing_status = "married" if st.checkbox("Married household") else "single"
+filing_status = "married" if st.checkbox("Married") else "single"
 
 num_children = st.number_input("Number of children", min_value=0, max_value=10, value=1)
 
