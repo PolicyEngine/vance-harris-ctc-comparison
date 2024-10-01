@@ -1,4 +1,6 @@
 streamlit
-policyengine-us
+policyengine_us
 black
 IPython
+plotly
+numpy
