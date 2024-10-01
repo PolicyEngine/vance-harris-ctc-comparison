@@ -92,10 +92,13 @@ def create_situation(filing_status, child_ages, earnings):
 
 def calculate_ctc(situation, reform=None):
     simulation = Simulation(situation=situation, reform=reform)
-    if reform is vance_ref or reform_harris:
+    
+    if reform in [vance_ref, reform_harris]:
         return simulation.calculate("refundable_ctc", YEAR)[0]
-    else:
+    elif reform is vance_non_ref or reform is None:
         return simulation.calculate("ctc_value", YEAR)[0]
+    else:
+        raise ValueError("Unknown reform")
 
 def create_reform_comparison_graph(filing_status, child_ages, earnings):
     colors = {
