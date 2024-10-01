@@ -5,6 +5,7 @@ from policyengine_us import Simulation
 from policyengine_core.reforms import Reform
 from policyengine_core.charts import format_fig
 import plotly.express as px
+import yaml
 
 # Define the reforms (unchanged)
 vance_ref = Reform.from_dict({
