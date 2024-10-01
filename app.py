@@ -48,7 +48,7 @@ reform_harris = Reform.from_dict({
 
 YEAR = "2025"
 DEFAULT_AGE = 40
-MAX_INCOME = 500000
+MAX_INCOME = 300000
 
 def create_situation(filing_status, child_ages, earnings):
     situation = {
@@ -92,16 +92,17 @@ def create_situation(filing_status, child_ages, earnings):
 
 def calculate_ctc(situation, reform=None):
     simulation = Simulation(situation=situation, reform=reform)
-    if reform is None:
-        return simulation.calculate("ctc_value", YEAR)[0]
+    if reform is vance_ref:
+        return simulation.calculate("refundable_ctc", YEAR)[0]
     else:
-        return simulation.calculate("ctc", YEAR)[0]
+        return simulation.calculate("ctc_value", YEAR)[0]
 
 def create_reform_comparison_graph(filing_status, child_ages, earnings):
     colors = {
+        "baseline": "#D3D3D3",    # Light grey for baseline
         "vance_ref": "#18375f",   # Dark blue
         "vance_non_ref": "#2976fe", # Light blue
-        "harris": "#c5c5c5",      # Light gray
+        "harris": "#4682B4",      # Steel blue for Harris
     }
     
     situation = create_situation(filing_status, child_ages, earnings)
@@ -110,31 +111,41 @@ def create_reform_comparison_graph(filing_status, child_ages, earnings):
     vance_non_ref_ctc = calculate_ctc(situation, vance_non_ref)
     harris_ctc = calculate_ctc(situation, reform_harris)
     
-    reforms = ["Vance (Refundable)", "Vance (Non-Refundable)", "Harris"]
-    ctc_impacts = [
-        vance_ref_ctc - baseline_ctc,
-        vance_non_ref_ctc - baseline_ctc,
-        harris_ctc - baseline_ctc
+    reforms = ["Current Law", "Vance (Refundable)", "Vance (Non-Refundable)", "Harris"]
+    ctc_values = [
+        baseline_ctc,
+        vance_ref_ctc,
+        vance_non_ref_ctc,
+        harris_ctc
     ]
     
-    fig = px.bar(
-        x=reforms,
-        y=ctc_impacts,
-        color=reforms,
-        color_discrete_map={
-            "Vance (Refundable)": colors["vance_ref"],
-            "Vance (Non-Refundable)": colors["vance_non_ref"],
-            "Harris": colors["harris"]
-        },
-        labels={"x": "Reform", "y": "CTC Impact"},
-        title=f'CTC Impact Comparison for {"Married" if filing_status == "married" else "Single"} Household (Earnings: ${earnings:,})'
-    )
+    fig = go.Figure()
+    
+    # Add baseline bar
+    fig.add_trace(go.Bar(
+        x=[reforms[0]],
+        y=[ctc_values[0]],
+        name="Current Law",
+        marker_color=colors["baseline"]
+    ))
+    
+    # Add impact bars
+    for reform, value, color in zip(reforms[1:], ctc_values[1:], [colors["vance_ref"], colors["vance_non_ref"], colors["harris"]]):
+        fig.add_trace(go.Bar(
+            x=[reform],
+            y=[value],
+            name=reform,
+            marker_color=color
+        ))
     
     fig.update_layout(
-        yaxis_title="CTC Impact (Reformed - Baseline)",
+        title=f'CTC Comparison for {"Married" if filing_status == "married" else "Single"} Household (Earnings: ${earnings:,})',
+        xaxis_title="Reform",
+        yaxis_title="CTC Value / Impact",
         yaxis=dict(tickformat='$,.0f'),
-        showlegend=False,
-        height=400,
+        legend_title="Reforms",
+        barmode='group',
+        height=500,
         width=800,
     )
     
@@ -144,30 +155,91 @@ def create_reform_comparison_line_graph(filing_status, child_ages):
     colors = {
         "vance_ref": "#18375f",   # Dark blue
         "vance_non_ref": "#2976fe", # Light blue
-        "harris": "#c5c5c5",      # Light gray
+        "harris": "#4682B4",      # Steel blue for Harris
     }
     
-    x = np.linspace(0, MAX_INCOME, 501)
+    def create_situation(filing_status, child_ages):
+        situation = {
+            "people": {
+                "adult": {
+                    "age": {YEAR: DEFAULT_AGE},
+                },
+            },
+            "families": {"family": {"members": ["adult"]}},
+            "marital_units": {"marital_unit": {"members": ["adult"]}},
+            "tax_units": {
+                "tax_unit": {
+                    "members": ["adult"],
+                    # Performance improvement settings
+                    "premium_tax_credit": {YEAR: 0},
+                    "tax_unit_itemizes": {YEAR: False},
+                    "taxable_income_deductions_if_itemizing": {YEAR: 0},
+                    "alternative_minimum_tax": {YEAR: 0},
+                    "net_investment_income_tax": {YEAR: 0},
+                    "eitc": {YEAR: 0},
+                }
+            },
+            "households": {
+                "household": {"members": ["adult"], "state_name": {YEAR: "TX"}}
+            },
+            "axes": [[
+                {
+                    "name": "employment_income",
+                    "min": 0,
+                    "max": MAX_INCOME,
+                    "count": 501,
+                    "period": YEAR,
+                }
+            ]]
+        }
+        
+        for i, age in enumerate(child_ages):
+            child_id = f"child_{i}"
+            situation["people"][child_id] = {"age": {YEAR: age}}
+            for unit in ["families", "tax_units", "households"]:
+                situation[unit][list(situation[unit].keys())[0]]["members"].append(child_id)
+        
+        if filing_status == "married":
+            situation["people"]["spouse"] = {"age": {YEAR: DEFAULT_AGE}}
+            for unit in ["families", "marital_units", "tax_units", "households"]:
+                situation[unit][list(situation[unit].keys())[0]]["members"].append("spouse")
+            
+        return situation
+
+    situation = create_situation(filing_status, child_ages)
+    
     fig = go.Figure()
     
-    for earnings in x:
-        situation = create_situation(filing_status, child_ages, earnings)
-        baseline_ctc = calculate_ctc(situation)
-        vance_ref_ctc = calculate_ctc(situation, vance_ref)
-        vance_non_ref_ctc = calculate_ctc(situation, vance_non_ref)
-        harris_ctc = calculate_ctc(situation, reform_harris)
-        
-        fig.add_trace(go.Scatter(x=[earnings], y=[vance_ref_ctc - baseline_ctc], mode='lines', line=dict(color=colors['vance_ref']), name='Vance (Refundable)'))
-        fig.add_trace(go.Scatter(x=[earnings], y=[vance_non_ref_ctc - baseline_ctc], mode='lines', line=dict(color=colors['vance_non_ref'], dash='dot'), name='Vance (Non-Refundable)'))
-        fig.add_trace(go.Scatter(x=[earnings], y=[harris_ctc - baseline_ctc], mode='lines', line=dict(color=colors['harris']), name='Harris'))
+    x = np.linspace(0, MAX_INCOME, 501)
+    
+    # Calculate baseline values
+    baseline_simulation = Simulation(situation=situation)
+    baseline_household_net_income = baseline_simulation.calculate("household_net_income", YEAR)
 
-    title = f'CTC Impact Comparison for {"Married" if filing_status == "married" else "Single"} Household'
+
+    reforms = {
+        "vance_ref": vance_ref,
+        "vance_non_ref": vance_non_ref,
+        "harris": reform_harris
+    }
+
+    for reform_name, reform in reforms.items():
+        simulation = Simulation(situation=situation, reform=reform)
+        
+        reformed_household_net_income = simulation.calculate("household_net_income", YEAR)
+        
+        net_income_impact = reformed_household_net_income - baseline_household_net_income
+
+        name = reform_name.replace("_", " ").title()
+        fig.add_trace(go.Scatter(x=x, y=net_income_impact, mode='lines', line=dict(color=colors[reform_name]), name=name))
+
+    title = f'Household Net Income Impact for {"Married" if filing_status == "married" else "Single"} Household'
     fig.update_layout(
         title=title,
         xaxis_title="Earnings",
-        yaxis_title="CTC Impact (Reformed - Baseline)",
+        yaxis_title="Net Income Impact (Reform - Baseline)",
         xaxis=dict(tickformat='$,.0f', range=[0, MAX_INCOME]),
-        yaxis=dict(tickformat='$,.0f'),
+        yaxis=dict(tickformat='$,.0f', zeroline=True, zerolinewidth=2, zerolinecolor='black'),
         legend=dict(
             yanchor="top",
             y=0.99,
@@ -211,11 +283,8 @@ if st.button("Generate Graphs"):
 
 st.write("""
 ### Notes:
-- The bar chart shows the impact of each reform proposal on the CTC at the specific earnings entered.
-- The line graph shows how the impact on the CTC changes across a range of earnings for each reform proposal.
-- Impact is calculated as: Reformed CTC Value ('ctc') - Baseline CTC Value ('ctc_value').
-- A positive value indicates an increase in the CTC under the reform, while a negative value indicates a decrease.
-- The simulation is for the tax year 2025.
-- Children must be under 17 years old to be eligible for the Child Tax Credit.
-- This simulation assumes no premium tax credit, no itemized deductions, no alternative minimum tax, no net investment income tax, and no earned income tax credit to improve performance.
+- All earnings are from the tax filer's wages and salaries.
+- The filer has no other taxable income.
+- The filer takes the standard deduction.
+- Married couples file jointly.
 """)
