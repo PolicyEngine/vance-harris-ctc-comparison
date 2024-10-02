@@ -23,13 +23,25 @@ def create_reform_comparison_graph(results):
                 else f"-${-diff:,.0f}" if diff < 0 else ""
             )
 
+            # Define pattern fill for Vance suggestions
+            pattern = None
+            if "Vance suggestion" in reform:
+                pattern = dict(
+                    shape="/",
+                    solidity=0.3,
+                    size=10,
+                )
+
             fig.add_trace(
                 go.Bar(
                     y=[reform],
                     x=[value],
                     name=reform,
                     orientation="h",
-                    marker_color=COLOR_MAP.get(reform, GRAY),
+                    marker=dict(
+                        color=COLOR_MAP.get(reform, GRAY),
+                        pattern=pattern,
+                    ),
                     text=text_inside,
                     textposition="inside",
                     insidetextanchor="middle",
