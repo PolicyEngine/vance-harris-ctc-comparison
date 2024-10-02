@@ -6,8 +6,24 @@ import yaml
 
 
 def create_reform_comparison_graph(results):
-    df = pd.DataFrame([{"reform": k, "ctc": v} for k, v in results.items()])
-    df_sorted = df.sort_values(by="ctc", ascending=False)
+    df = pd.DataFrame(results.items(), columns=["reform", "ctc"])
+
+    # Custom sorting function to ensure baseline always shows up on top
+    def custom_sort(row):
+        if row.reform == "Baseline":
+            # Highest priority, then by descending CTC value
+            return (1, -row.ctc)
+        else:
+            # Lower priority, then by descending CTC value
+            return (0, -row.ctc)
+
+    # Sort the DataFrame using the custom sorting function
+    df_sorted = df.sort_values(
+        by=["reform", "ctc"],
+        key=lambda x: pd.Series(
+            [custom_sort(row) for row in df.itertuples(index=False)]
+        ),
+    )
 
     fig = go.Figure()
 
