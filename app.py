@@ -1,183 +1,83 @@
 import streamlit as st
-import plotly.graph_objects as go
-from policyengine_core.charts import format_fig
-import pandas as pd
 from utils import (
-    LIGHT_GRAY,
-    DARK_RED,
-    LIGHT_RED,
-    BLUE,
     create_situation,
     calculate_ctc,
-    MAX_INCOME,
     YEAR,
     TEAL_ACCENT,
+    MAX_INCOME,
+)
+from graph import create_reform_comparison_graph
+from config import (
+    REFORMS,
+    APP_TITLE,
+    BASELINE_DESCRIPTION,
+    REFORMS_DESCRIPTION,
+    NOTES,
 )
 
 import yaml
 
 
-def create_reform_comparison_graph(df):
-    colors = {
-        "Baseline": LIGHT_GRAY,
-        "Harris": BLUE,
-        "Vance (refundable)": DARK_RED,
-        "Vance (non-refundable)": LIGHT_RED,
-    }
+def main():
+    st.set_page_config(page_title=APP_TITLE, page_icon="👪", layout="wide")
+    st.title(APP_TITLE)
 
-    # Sort the dataframe by CTC value in descending order
-    df_sorted = df.sort_values(by="ctc", ascending=False)
+    st.markdown(BASELINE_DESCRIPTION)
 
-    fig = go.Figure()
-
-    baseline_value = df_sorted[df_sorted["reform"] == "Baseline"][
-        "ctc"
-    ].values[0]
-
-    for reform in df_sorted["reform"]:
-        value = df_sorted[df_sorted["reform"] == reform]["ctc"].values[0]
-        diff = value - baseline_value
-
-        text_inside = f"${value:,.0f}"
-        text_outside = ""
-        if reform != "Baseline":
-            text_outside = f"+${diff:,.0f}" if diff > 0 else f"-${-diff:,.0f}"
-
-        fig.add_trace(
-            go.Bar(
-                y=[reform],
-                x=[value],
-                name=reform,
-                orientation="h",
-                marker_color=colors.get(reform, LIGHT_GRAY),
-                text=text_inside,
-                textposition="inside",
-                insidetextanchor="middle",
-                textfont=dict(size=16, color="white"),
-            )
+    # User inputs
+    is_married = st.checkbox("I'm married")
+    num_children = st.number_input(
+        "Number of children", min_value=0, max_value=10, value=1
+    )
+    child_ages = [
+        st.number_input(
+            f"Age of child {i+1}", min_value=0, max_value=16, value=5
         )
-
-        if text_outside:
-            fig.add_annotation(
-                y=reform,
-                x=value,
-                text=text_outside,
-                showarrow=False,
-                xanchor="left",
-                yanchor="middle",
-                xshift=5,
-                font=dict(size=16),
-            )
-
-    fig.update_layout(
-        title=dict(
-            text="How reforms would affect your child tax credit",
-            font=dict(size=24),
-        ),
-        xaxis=dict(tickformat="$,.0f", tickfont=dict(size=14)),
-        height=500,
-        width=800,
-        bargap=0.2,
-        uniformtext_minsize=10,
-        uniformtext_mode="hide",
-        showlegend=False,
-        yaxis=dict(title=None, tickfont=dict(size=14)),
-        font=dict(size=14),
+        for i in range(num_children)
+    ]
+    earnings = st.number_input(
+        f"Household wages and salaries in {YEAR}",
+        min_value=0,
+        value=50000,
+        step=1000,
+        max_value=MAX_INCOME,
     )
 
-    return fig
+    if st.button("Calculate My CTC"):
+        household = create_situation(is_married, child_ages, earnings)
+        baseline_ctc = calculate_ctc(household, "baseline")
 
-
-# Streamlit app
-st.title("Child Tax Credit Calculator")
-
-st.markdown(
-    """
-## Current Child Tax Credit
-The current Child Tax Credit provides up to $2,000 per qualifying child, phasing in and out with income. 
-[Learn more about the current Child Tax Credit](https://policyengine.org/us/research/the-child-tax-credit-in-2023)
-"""
-)
-
-# User inputs
-is_married = st.checkbox("I'm married")
-num_children = st.number_input(
-    "Number of children", min_value=0, max_value=10, value=1
-)
-child_ages = [
-    st.number_input(f"Age of child {i+1}", min_value=0, max_value=16, value=5)
-    for i in range(num_children)
-]
-earnings = st.number_input(
-    f"Household wages and salaries in {YEAR}",
-    min_value=0,
-    value=50000,
-    step=1000,
-)
-
-if st.button("Generate Comparison"):
-    # Create placeholders for headline and chart
-    headline_placeholder = st.empty()
-    subheading_placeholder = st.empty()
-    reforms_description_placeholder = st.empty()
-    chart_placeholder = st.empty()
-
-    # Create the household dictionary
-    household = create_situation(is_married, child_ages, earnings)
-
-    # List of reforms to calculate with their display names
-    reforms = [
-        ("baseline", "Baseline"),
-        ("harris", "Harris"),
-        ("vance_non_refundable", "Vance (non-refundable)"),
-        ("vance_refundable", "Vance (refundable)"),
-    ]
-
-    # Initialize an empty list to store the data
-    data = []
-
-    # Iterate through reforms
-    for reform_key, reform_name in reforms:
-        # Calculate CTC for the current reform
-        ctc_value = calculate_ctc(household, reform_key)
-
-        # Add the result to the data list
-        data.append(
-            {"reform": reform_name, "ctc": ctc_value, "earnings": earnings}
+        st.markdown(
+            f"<h2 style='text-align: center;'>In {YEAR}, you are eligible for a "
+            f"<span style='color:{TEAL_ACCENT};'>${baseline_ctc:,.0f}</span> child tax credit.</h2>",
+            unsafe_allow_html=True,
         )
 
-        # Create a new DataFrame from the data list
-        df = pd.DataFrame(data)
+        st.markdown("## How would reforms affect your child tax credit?")
+        st.markdown(REFORMS_DESCRIPTION)
 
-        # Update the headline and chart
-        if reform_key == "baseline":
-            headline_placeholder.markdown(
-                f"<h1 style='text-align: center;'>In {YEAR}, you are eligible for a <br><span style='color:{TEAL_ACCENT};'>${ctc_value:,.0f}</span> child tax credit.</h1>",
-                unsafe_allow_html=True,
-            )
-            # Add descriptions of the reforms
-            reforms_description_placeholder.markdown(
-                """
-            ### Proposed Reforms
-            
-            **Harris CTC**: Restores the 2021 expansion that made it fully refundable and more generous, and adds a $2,400 "baby bonus".
-            [Learn more about the Harris CTC proposal](https://policyengine.org/us/research/harris-ctc)
-            
-            **Vance CTC**: Expands the CTC to $5,000. Senator Vance did not specify whether it was refundable, so we modeled both scenarios.
-            [Learn more about the Vance CTC suggestion](https://policyengine.org/us/research/vance-ctc)
-            """
-            )
+        results = calculate_ctc_for_reforms(household)
+        fig = create_reform_comparison_graph(results)
+        st.plotly_chart(fig, use_container_width=True)
 
-        fig = create_reform_comparison_graph(df)
-        chart_placeholder.plotly_chart(format_fig(fig))
+        st.markdown("## Impact of Reforms")
+        for reform_name, ctc_value in results.items():
+            if reform_name != "Baseline":
+                diff = ctc_value - baseline_ctc
+                change = "increase" if diff > 0 else "decrease"
+                st.markdown(
+                    f"- The **{reform_name}** reform would {change} your child tax credit by **${abs(diff):,.0f}**."
+                )
 
-st.write(
-    f"""
-### Notes:
-- All earnings are from the tax filer's wages and salaries in {YEAR}.
-- The filer has no other taxable income.
-- The filer takes the standard deduction.
-- Married couples file jointly.
-- We assume Senator JD Vance's suggestion has the same age limit as the current CTC.
-"""
-)
+    st.markdown(NOTES)
+
+
+def calculate_ctc_for_reforms(household):
+    return {
+        reform_name: calculate_ctc(household, reform_key)
+        for reform_key, reform_name in REFORMS
+    }
+
+
+if __name__ == "__main__":
+    main()
