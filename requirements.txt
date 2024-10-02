@@ -4,3 +4,4 @@ black
 IPython
 plotly
 numpy
+pyyaml
