@@ -1,17 +1,11 @@
 import plotly.graph_objects as go
 import pandas as pd
-from utils import GRAY, DARK_RED, LIGHT_RED, BLUE
+from utils import GRAY
+from config import COLOR_MAP
 import yaml
 
 
 def create_reform_comparison_graph(results):
-    colors = {
-        "Baseline": GRAY,
-        "Harris": BLUE,
-        "Vance (refundable)": DARK_RED,
-        "Vance (non-refundable)": LIGHT_RED,
-    }
-
     df = pd.DataFrame([{"reform": k, "ctc": v} for k, v in results.items()])
     df_sorted = df.sort_values(by="ctc", ascending=False)
 
@@ -35,7 +29,7 @@ def create_reform_comparison_graph(results):
                     x=[value],
                     name=reform,
                     orientation="h",
-                    marker_color=colors.get(reform, GRAY),
+                    marker_color=COLOR_MAP.get(reform, GRAY),
                     text=text_inside,
                     textposition="inside",
                     insidetextanchor="middle",
@@ -56,9 +50,11 @@ def create_reform_comparison_graph(results):
                 )
 
     fig.update_layout(
-        title=dict(text="Comparison of CTC Reforms", font=dict(size=24)),
+        title=dict(
+            text="Your 2025 Child Tax Credit by Policy", font=dict(size=24)
+        ),
         xaxis=dict(
-            title="Child Tax Credit Amount",
+            title=None,
             tickformat="$,.0f",
             tickfont=dict(size=14),
         ),
