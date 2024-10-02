@@ -16,7 +16,7 @@ Enter your information below to see how much you're eligible for.
 """
 
 REFORMS_DESCRIPTION = """
-Several reforms have been proposed to change the Child Tax Credit:
+Members of the Democratic and Republican presidential tickets have proposed expanding the Child Tax Credit:
 
 - **Harris CTC**: Restores the 2021 expansion that made it fully refundable and more generous, and adds a $2,400 "baby bonus".
   [Learn more about the Harris CTC proposal](https://policyengine.org/us/research/harris-ctc)
