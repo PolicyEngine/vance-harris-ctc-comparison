@@ -48,7 +48,7 @@ def create_reform_comparison_graph(results):
                     text=text_inside,
                     textposition="inside",
                     insidetextanchor="middle",
-                    textfont=dict(size=18, color=text_color),
+                    textfont=dict(size=18, color=text_color, weight="bold"),
                 )
             )
 
@@ -78,7 +78,7 @@ def create_reform_comparison_graph(results):
         uniformtext_minsize=10,
         uniformtext_mode="hide",
         showlegend=False,
-        yaxis=dict(title=None, tickfont=dict(size=14)),
+        yaxis=dict(title=None, tickfont=dict(size=18)),
         font=dict(size=14),
         margin=dict(l=20, r=20, t=40, b=20),
     )
