@@ -14,12 +14,11 @@ from config import (
     REFORMS_DESCRIPTION,
     NOTES,
 )
-
 import yaml
 
 
 def main():
-    st.set_page_config(page_title=APP_TITLE, page_icon="👪", layout="wide")
+    st.set_page_config(page_title=APP_TITLE, page_icon="👪")
     st.title(APP_TITLE)
 
     st.markdown(BASELINE_DESCRIPTION)
@@ -45,38 +44,40 @@ def main():
 
     if st.button("Calculate My CTC"):
         household = create_situation(is_married, child_ages, earnings)
+
+        # Calculate baseline CTC first
         baseline_ctc = calculate_ctc(household, "baseline")
 
+        # Display the baseline CTC
         st.markdown(
             f"<h2 style='text-align: center;'>In {YEAR}, you are eligible for a "
             f"<span style='color:{TEAL_ACCENT};'>${baseline_ctc:,.0f}</span> child tax credit.</h2>",
             unsafe_allow_html=True,
         )
 
-        st.markdown("## How would reforms affect your child tax credit?")
         st.markdown(REFORMS_DESCRIPTION)
 
-        results = calculate_ctc_for_reforms(household)
-        fig = create_reform_comparison_graph(results)
-        st.plotly_chart(fig, use_container_width=True)
+        # Create placeholders for the chart and results
+        chart_placeholder = st.empty()
 
-        st.markdown("## Impact of Reforms")
-        for reform_name, ctc_value in results.items():
-            if reform_name != "Baseline":
-                diff = ctc_value - baseline_ctc
-                change = "increase" if diff > 0 else "decrease"
-                st.markdown(
-                    f"- The **{reform_name}** reform would {change} your child tax credit by **${abs(diff):,.0f}**."
-                )
+        results = {"Baseline": baseline_ctc}
+
+        # Update chart with baseline
+        fig = create_reform_comparison_graph(results)
+        chart_placeholder.plotly_chart(fig, use_container_width=True)
+
+        # Calculate and display other reforms
+        for reform_key, reform_name in REFORMS[
+            1:
+        ]:  # Skip baseline as it's already calculated
+            ctc_value = calculate_ctc(household, reform_key)
+            results[reform_name] = ctc_value
+
+            # Update the chart
+            fig = create_reform_comparison_graph(results)
+            chart_placeholder.plotly_chart(fig, use_container_width=True)
 
     st.markdown(NOTES)
-
-
-def calculate_ctc_for_reforms(household):
-    return {
-        reform_name: calculate_ctc(household, reform_key)
-        for reform_key, reform_name in REFORMS
-    }
 
 
 if __name__ == "__main__":
