@@ -50,7 +50,7 @@ def main():
 
         # Display the baseline CTC
         st.markdown(
-            f"<h2 style='text-align: center;'>In {YEAR}, you are eligible for a "
+            f"<h2 style='text-align: center;'>In {YEAR}, you will be eligible for a "
             f"<span style='color:{TEAL_ACCENT};'>${baseline_ctc:,.0f}</span> child tax credit.</h2>",
             unsafe_allow_html=True,
         )

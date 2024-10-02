@@ -22,7 +22,7 @@ APP_TITLE = "Child Tax Credit Calculator"
 BASELINE_DESCRIPTION = """
 ## Current Child Tax Credit
 The current Child Tax Credit provides up to $2,000 per qualifying child, phasing in and out with income. 
-Enter your information below to see how much you're eligible for.
+Enter your expected 2025 information below to see how much you'll be eligible for.
 
 [Learn more about the current Child Tax Credit](https://policyengine.org/us/research/the-child-tax-credit-in-2023)
 """

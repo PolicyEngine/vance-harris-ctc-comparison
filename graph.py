@@ -17,11 +17,7 @@ def create_reform_comparison_graph(results):
         for reform, value in zip(df_sorted["reform"], df_sorted["ctc"]):
             diff = value - baseline_value
             text_inside = f"${value:,.0f}"
-            text_outside = (
-                f"+${diff:,.0f}"
-                if diff > 0
-                else f"-${-diff:,.0f}" if diff < 0 else ""
-            )
+            text_outside = f"+${diff:,.0f}" if diff >= 0 else f"-${-diff:,.0f}"
 
             # Define pattern fill for Vance suggestions
             pattern = None
@@ -52,7 +48,7 @@ def create_reform_comparison_graph(results):
                 )
             )
 
-            if text_outside:
+            if reform != "Baseline":
                 fig.add_annotation(
                     y=reform,
                     x=value,
