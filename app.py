@@ -124,19 +124,21 @@ if st.button("Generate Comparison"):
         ("vance_refundable", "Vance (refundable)"),
     ]
 
-    # Initialize an empty dataframe
-    df = pd.DataFrame(columns=["reform", "ctc", "earnings"])
+    # Initialize an empty list to store the data
+    data = []
 
     # Iterate through reforms
     for reform_key, reform_name in reforms:
         # Calculate CTC for the current reform
         ctc_value = calculate_ctc(household, reform_key)
 
-        # Add the result to the dataframe
-        df = df.append(
-            {"reform": reform_name, "ctc": ctc_value, "earnings": earnings},
-            ignore_index=True,
+        # Add the result to the data list
+        data.append(
+            {"reform": reform_name, "ctc": ctc_value, "earnings": earnings}
         )
+
+        # Create a new DataFrame from the data list
+        df = pd.DataFrame(data)
 
         # Update the headline and chart
         if reform_key == "baseline":
