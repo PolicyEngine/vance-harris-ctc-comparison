@@ -91,8 +91,16 @@ def create_reform_comparison_graph(df):
 # Streamlit app
 st.title("Child Tax Credit Calculator")
 
+st.markdown(
+    """
+## Current Child Tax Credit
+The current Child Tax Credit provides up to $2,000 per qualifying child, phasing in and out with income. 
+[Learn more about the current Child Tax Credit](https://policyengine.org/us/research/the-child-tax-credit-in-2023)
+"""
+)
+
 # User inputs
-is_married = st.checkbox("Married household")
+is_married = st.checkbox("I'm married")
 num_children = st.number_input(
     "Number of children", min_value=0, max_value=10, value=1
 )
@@ -103,7 +111,6 @@ child_ages = [
 earnings = st.number_input(
     f"Household wages and salaries in {YEAR}",
     min_value=0,
-    max_value=int(MAX_INCOME),
     value=50000,
     step=1000,
 )
@@ -111,6 +118,8 @@ earnings = st.number_input(
 if st.button("Generate Comparison"):
     # Create placeholders for headline and chart
     headline_placeholder = st.empty()
+    subheading_placeholder = st.empty()
+    reforms_description_placeholder = st.empty()
     chart_placeholder = st.empty()
 
     # Create the household dictionary
@@ -145,6 +154,18 @@ if st.button("Generate Comparison"):
             headline_placeholder.markdown(
                 f"<h1 style='text-align: center;'>In {YEAR}, you are eligible for a <br><span style='color:{TEAL_ACCENT};'>${ctc_value:,.0f}</span> child tax credit.</h1>",
                 unsafe_allow_html=True,
+            )
+            # Add descriptions of the reforms
+            reforms_description_placeholder.markdown(
+                """
+            ### Proposed Reforms
+            
+            **Harris CTC**: Restores the 2021 expansion that made it fully refundable and more generous, and adds a $2,400 "baby bonus".
+            [Learn more about the Harris CTC proposal](https://policyengine.org/us/research/harris-ctc)
+            
+            **Vance CTC**: Expands the CTC to $5,000. Senator Vance did not specify whether it was refundable, so we modeled both scenarios.
+            [Learn more about the Vance CTC suggestion](https://policyengine.org/us/research/vance-ctc)
+            """
             )
 
         fig = create_reform_comparison_graph(df)
