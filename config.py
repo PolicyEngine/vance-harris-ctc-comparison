@@ -1,4 +1,4 @@
-from utils import GRAY, BLUE, DARK_RED, LIGHT_RED
+from utils import GRAY, BLUE, LIGHT_RED, LIGHTER_RED
 
 REFORMS = [
     ("baseline", "Baseline"),
@@ -13,8 +13,8 @@ REFORMS = [
 COLOR_MAP = {
     "Baseline": GRAY,
     "Harris-Walz plan": BLUE,
-    "Vance suggestion<br>(refundable possibility)": DARK_RED,
-    "Vance suggestion<br>(non-refundable possibility)": LIGHT_RED,
+    "Vance suggestion<br>(refundable possibility)": LIGHT_RED,
+    "Vance suggestion<br>(non-refundable possibility)": LIGHTER_RED,
 }
 
 APP_TITLE = "Child Tax Credit Calculator"

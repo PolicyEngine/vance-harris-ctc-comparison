@@ -5,6 +5,7 @@ import yaml
 
 # Colors
 LIGHT_RED = "#f78989"
+LIGHTER_RED = "#f9b1b1"
 BLACK = "#000000"
 BLUE_95 = "#D8E6F3"
 BLUE_98 = "#F7FAFD"
