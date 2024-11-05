@@ -1,8 +1,6 @@
 from reforms import vance_non_refundable, harris, VANCE_AMOUNT
 from policyengine_us import Simulation
 
-import yaml
-
 # Colors
 LIGHT_RED = "#f78989"
 LIGHTER_RED = "#f9b1b1"
@@ -83,10 +81,10 @@ def create_situation(is_married, child_ages, earnings, add_axes=False):
     return situation
 
 
-def calculate_ctc(situation, reform=None, vary_earnings=False):
-    if reform is "baseline":
+def calculate_ctc(situation, reform=None):
+    if reform == "baseline":
         return Simulation(situation=situation).calculate("ctc_value", YEAR)[0]
-    elif reform is "vance_refundable":
+    elif reform == "vance_refundable":
         # Calculate the number of children
         num_children = sum(
             1
@@ -94,11 +92,11 @@ def calculate_ctc(situation, reform=None, vary_earnings=False):
             if person.get("age", {}).get(YEAR, 100) < 17
         )
         return VANCE_AMOUNT * num_children
-    elif reform is "vance_non_refundable":
+    elif reform == "vance_non_refundable":
         return Simulation(
             situation=situation, reform=vance_non_refundable
         ).calculate("ctc_value", YEAR)[0]
-    elif reform is "harris":
+    elif reform == "harris":
         return Simulation(situation=situation, reform=harris).calculate(
             "refundable_ctc", YEAR
         )[0]
