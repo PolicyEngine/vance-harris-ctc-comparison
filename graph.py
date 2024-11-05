@@ -2,7 +2,6 @@ import plotly.graph_objects as go
 import pandas as pd
 from utils import GRAY
 from config import COLOR_MAP
-import yaml
 
 
 def create_reform_comparison_graph(results):

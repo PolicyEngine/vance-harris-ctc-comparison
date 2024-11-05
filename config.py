@@ -41,7 +41,7 @@ The graph below shows how these reforms would affect your Child Tax Credit:
 
 NOTES = """
 ### Assumptions:
-- All earnings are from the tax filer's wages and salaries in 2025.
+- All earnings are from the tax filer's wages, salaries, and tips in 2025.
 - The filer has no other taxable income.
 - The filer takes the standard deduction.
 - Married couples file jointly.

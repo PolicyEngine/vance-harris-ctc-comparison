@@ -14,7 +14,6 @@ from config import (
     REFORMS_DESCRIPTION,
     NOTES,
 )
-import yaml
 
 
 def main():

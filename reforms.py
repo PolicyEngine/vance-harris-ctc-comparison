@@ -1,7 +1,5 @@
 from policyengine_core.reforms import Reform
 
-import yaml
-
 VANCE_AMOUNT = 5_000
 
 # Define the reforms.
