@@ -1,8 +1,0 @@
-setuptools
-streamlit
-policyengine_us
-black
-IPython
-plotly
-numpy
-pyyaml
