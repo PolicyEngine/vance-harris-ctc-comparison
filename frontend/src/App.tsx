@@ -1,6 +1,7 @@
+'use client';
+
 import { useState } from "react";
 import { Container, Title, MantineProvider, createTheme } from "@mantine/core";
-import "@mantine/core/styles.css";
 import HouseholdForm from "./components/HouseholdForm";
 import CtcChart from "./components/CtcChart";
 import ResultsSummary from "./components/ResultsSummary";
