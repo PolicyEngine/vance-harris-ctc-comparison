@@ -2,7 +2,7 @@
 // points at the Modal-hosted API used by the production deployment.
 const API_URL =
   (typeof process !== "undefined" &&
-    (process.env.NEXT_PUBLIC_API_URL || process.env.VITE_API_URL)) ||
+    process.env.NEXT_PUBLIC_API_URL) ||
   "https://policyengine--vance-harris-ctc-calculate.modal.run";
 
 export interface CtcResults {

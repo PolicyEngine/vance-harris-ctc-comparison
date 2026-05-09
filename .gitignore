@@ -161,13 +161,13 @@ cython_debug/
 
 # Node
 node_modules/
-frontend/dist/
+dist/
 
 # Next.js
-frontend/.next/
-frontend/out/
-frontend/build/
-frontend/coverage/
-frontend/.vercel/
-frontend/.turbo/
-frontend/next-env.d.ts
+.next/
+out/
+build/
+coverage/
+.vercel/
+.turbo/
+next-env.d.ts

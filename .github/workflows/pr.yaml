@@ -13,8 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-      - run: cd frontend && bun install --frozen-lockfile
-      - run: cd frontend && bun run build
+      - run: bun install --frozen-lockfile
+      - run: bun run build
 
   test:
     name: Tests
@@ -22,8 +22,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-      - run: cd frontend && bun install --frozen-lockfile
-      - run: cd frontend && bun run test
+      - run: bun install --frozen-lockfile
+      - run: bun run test
 
   lint:
     name: Lint
@@ -31,5 +31,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-      - run: cd frontend && bun install --frozen-lockfile
-      - run: cd frontend && bun run lint
+      - run: bun install --frozen-lockfile
+      - run: bun run lint
