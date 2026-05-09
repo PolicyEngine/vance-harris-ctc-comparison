@@ -162,3 +162,12 @@ cython_debug/
 # Node
 node_modules/
 frontend/dist/
+
+# Next.js
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/coverage/
+frontend/.vercel/
+frontend/.turbo/
+frontend/next-env.d.ts

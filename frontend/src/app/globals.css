@@ -1,11 +1,15 @@
+@import "tailwindcss";
+@import "@policyengine/ui-kit/theme.css";
+@import "@mantine/core/styles.css";
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: "Inter", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: #f7fdfc;
-}
-
-* {
-  box-sizing: border-box;
 }

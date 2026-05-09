@@ -1,5 +1,8 @@
+// Next.js exposes browser-readable env vars as NEXT_PUBLIC_*; the default
+// points at the Modal-hosted API used by the production deployment.
 const API_URL =
-  import.meta.env.VITE_API_URL ||
+  (typeof process !== "undefined" &&
+    (process.env.NEXT_PUBLIC_API_URL || process.env.VITE_API_URL)) ||
   "https://policyengine--vance-harris-ctc-calculate.modal.run";
 
 export interface CtcResults {
