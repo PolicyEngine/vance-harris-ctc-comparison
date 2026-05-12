@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
-import PolicyEngineHeader from '@/components/PolicyEngineHeader';
 
 const SITE_URL = 'https://vance-harris-ctc-comparison.vercel.app';
 const TITLE = 'Vance and Harris CTC comparison | PolicyEngine';
@@ -50,10 +49,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>
-        <PolicyEngineHeader />
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
