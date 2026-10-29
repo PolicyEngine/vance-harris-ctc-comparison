@@ -5,7 +5,9 @@ import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import './globals.css';
 
-const SITE_URL = 'https://vance-harris-ctc-comparison.vercel.app';
+// The canonical address: policyengine.org serves this app through a zone
+// rewrite, so links and link previews name it, not the Vercel deployment.
+const SITE_URL = 'https://policyengine.org/us/child-tax-credit-2024-election-calculator';
 const TITLE = 'Vance and Harris CTC comparison | PolicyEngine';
 const DESCRIPTION =
   'Calculate and compare the impact of the Vance and Harris Child Tax Credit proposals on your household, powered by PolicyEngine US microsimulation.';
