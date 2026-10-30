@@ -13,12 +13,18 @@ const DESCRIPTION =
   'Calculate and compare the impact of the Vance and Harris Child Tax Credit proposals on your household, powered by PolicyEngine US microsimulation.';
 
 export const metadata: Metadata = {
+  // metadataBase carries the base path. Next.js joins its path onto relative
+  // metadata URLs, and file-based images such as opengraph-image already
+  // include the base path, so one added here would 404 with the path doubled.
+  // Use absolute URLs for any image added later.
   metadataBase: new URL(SITE_URL),
   title: TITLE,
   description: DESCRIPTION,
   authors: [{ name: 'PolicyEngine' }],
+  alternates: { canonical: SITE_URL },
   openGraph: {
     type: 'website',
+    url: SITE_URL,
     title: TITLE,
     description: DESCRIPTION,
     siteName: 'PolicyEngine',
