@@ -5,18 +5,28 @@ import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import './globals.css';
 
-const SITE_URL = 'https://vance-harris-ctc-comparison.vercel.app';
+// The canonical address: policyengine.org serves this app through a zone
+// rewrite, so links and link previews name it, not the Vercel deployment.
+const SITE_URL = 'https://policyengine.org/us/child-tax-credit-2024-election-calculator';
 const TITLE = 'Vance and Harris CTC comparison | PolicyEngine';
 const DESCRIPTION =
   'Calculate and compare the impact of the Vance and Harris Child Tax Credit proposals on your household, powered by PolicyEngine US microsimulation.';
 
 export const metadata: Metadata = {
+  // metadataBase carries the base path, and Next.js joins its path onto
+  // relative metadata URLs. File-based images (the opengraph-image and
+  // twitter-image conventions) already include the base path, so production
+  // builds would emit them with the path doubled and they would 404; dev and
+  // Vercel preview builds hide this. Set openGraph.images or twitter.images
+  // explicitly instead.
   metadataBase: new URL(SITE_URL),
   title: TITLE,
   description: DESCRIPTION,
   authors: [{ name: 'PolicyEngine' }],
+  alternates: { canonical: SITE_URL },
   openGraph: {
     type: 'website',
+    url: SITE_URL,
     title: TITLE,
     description: DESCRIPTION,
     siteName: 'PolicyEngine',
